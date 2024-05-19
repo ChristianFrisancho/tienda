@@ -2,7 +2,7 @@ from fastapi import FastAPI
 import mysql.connector
 import schemas
 from fastapi.middleware.cors import CORSMiddleware
-
+## Es
 app = FastAPI()
 
 # Define object-related classes
