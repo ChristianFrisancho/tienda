@@ -93,8 +93,8 @@ def add_objeto_en_tienda(id: int, item: schemas.Item):
     precio = item.precio
     stock = item.stock
     cursor = mydb.cursor()
-    sql = "INSERT INTO objetos_en_tienda (nombre_tienda, nombre_objeto, precio, stock) VALUES (%s, %s, %s, %s)"
-    val = (nombre_tienda, nombre_objeto, precio, stock)
+    sql = "INSERT INTO objetos_en_tienda (nombre_tienda, nombre_objeto, precio, stock, id_tienda, id_objeto) VALUES (%s, %s, %s, %s, %s, %s)"
+    val = (nombre_tienda, nombre_objeto, precio, stock, id , item.id_objeto)
     cursor.execute(sql, val)
     mydb.commit()
     mydb.close()
