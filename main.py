@@ -33,7 +33,7 @@ def build_objeto_en_tienda_object(data):
     return None
 
 # Database connection parameters
-host_name = "database-1.cpxnwinne8ao.us-east-1.rds.amazonaws.com"
+host_name = "database-1.cofb7quhpsqh.us-east-1.rds.amazonaws.com"
 port_number = "3306"
 user_name = "admin"
 password_db = "CC-utec_2024-s3"
