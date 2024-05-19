@@ -2,7 +2,7 @@ from fastapi import FastAPI
 import mysql.connector
 import schemas
 from fastapi.middleware.cors import CORSMiddleware
-## Es
+
 app = FastAPI()
 
 # Define object-related classes
@@ -52,6 +52,21 @@ def get_tiendas():
 
     tiendas = [build_tienda_object(data) for data in results]
     return {"tiendas": tiendas}
+
+# Post
+@app.post("/tiendas")
+def add_tienda(tienda: schemas.Tienda):
+    mydb = mysql.connector.connect(
+        host=host_name, port=port_number, user=user_name, password=password_db, database=database_name
+    )
+    nombre = tienda.nombre
+    cursor = mydb.cursor()
+    sql = "INSERT INTO tienda (nombre) VALUES (%s)"
+    val = (nombre,)
+    cursor.execute(sql, val)
+    mydb.commit()
+    mydb.close()
+    return {"message": "Tienda añadida exitosamente"} 
 
 # Obtener los objetos de una tienda por ID
 @app.get("/tiendas/{id}/objetos")
