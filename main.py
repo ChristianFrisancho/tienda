@@ -1,14 +1,44 @@
 from fastapi import FastAPI
 import mysql.connector
 import schemas
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# Define object-related classes
+class Tienda:
+    def __init__(self, id, nombre, direccion):
+        self.id = id
+        self.nombre = nombre
+        self.direccion = direccion
+
+class ObjetoEnTienda:
+    def __init__(self, id, nombre_tienda, nombre_objeto, precio, stock):
+        self.id = id
+        self.nombre_tienda = nombre_tienda
+        self.nombre_objeto = nombre_objeto
+        self.precio = precio
+        self.stock = stock
+        
+ALLOWED_ORIGINS = '*'    # or 'foo.com', etc.
+
+# Function to build Tienda and ObjetoEnTienda objects
+def build_tienda_object(data):
+    if data:
+        return Tienda(id=data[0], nombre=data[1], direccion=data[2])
+    return None
+
+def build_objeto_en_tienda_object(data):
+    if data:
+        return ObjetoEnTienda(id=data[0], nombre_tienda=data[1], nombre_objeto=data[2], precio=data[3], stock=data[4])
+    return None
+
+# Database connection parameters
 host_name = "database-1.cpxnwinne8ao.us-east-1.rds.amazonaws.com"
 port_number = "3306"
 user_name = "admin"
 password_db = "CC-utec_2024-s3"
-database_name = "tienda"  
+database_name = "tienda"
 
 # Obtener todas las tiendas
 @app.get("/tiendas")
@@ -18,9 +48,11 @@ def get_tiendas():
     )
     cursor = mydb.cursor()
     cursor.execute("SELECT * FROM tienda")
-    result = cursor.fetchall()
+    results = cursor.fetchall()
     mydb.close()
-    return {"tiendas": result}
+
+    tiendas = [build_tienda_object(data) for data in results]
+    return {"tiendas": tiendas}
 
 # Obtener los objetos de una tienda por ID
 @app.get("/tiendas/{id}/objetos")
@@ -29,10 +61,12 @@ def get_objetos_en_tienda(id: int):
         host=host_name, port=port_number, user=user_name, password=password_db, database=database_name
     )
     cursor = mydb.cursor()
-    cursor.execute(f"SELECT * FROM objetos_en_tienda WHERE id = {id}")
-    result = cursor.fetchall()
+    cursor.execute(f"SELECT * FROM objetos_en_tienda WHERE id_tienda = {id}")
+    results = cursor.fetchall()
     mydb.close()
-    return {"objetos": result}
+
+    objetos_en_tienda = [build_objeto_en_tienda_object(data) for data in results]
+    return {"objetos": objetos_en_tienda}
 
 # Añadir un nuevo objeto a una tienda
 @app.post("/tiendas/{id}/objetos")
@@ -68,19 +102,7 @@ def update_objeto_en_tienda(id_tienda: int, id_objeto: int, item: schemas.Item):
     mydb.commit()
     mydb.close()
     return {"message": "Objeto modificado exitosamente"}
-
-# Eliminar un objeto de una tienda por ID
-@app.delete("/tiendas/{id_tienda}/objetos/{id_objeto}")
-def delete_objeto_en_tienda(id_tienda: int, id_objeto: int):
-    mydb = mysql.connector.connect(
-        host=host_name, port=port_number, user=user_name, password=password_db, database=database_name
-    )
-    cursor = mydb.cursor()
-    cursor.execute(f"DELETE FROM objetos_en_tienda WHERE id = {id_objeto}")
-    mydb.commit()
-    mydb.close()
-    return {"message": "Objeto eliminado exitosamente"}
-
+    
 # Eliminar una tienda por ID
 @app.delete("/tiendas/{id}")
 def delete_tienda(id: int):
@@ -92,3 +114,10 @@ def delete_tienda(id: int):
     mydb.commit()
     mydb.close()
     return {"message": "Tienda eliminada exitosamente"}
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
