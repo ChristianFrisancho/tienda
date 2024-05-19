@@ -7,10 +7,9 @@ app = FastAPI()
 
 # Define object-related classes
 class Tienda:
-    def __init__(self, id, nombre, direccion):
+    def __init__(self, id, nombre):
         self.id = id
         self.nombre = nombre
-        self.direccion = direccion
 
 class ObjetoEnTienda:
     def __init__(self, id, nombre_tienda, nombre_objeto, precio, stock):
@@ -25,7 +24,7 @@ ALLOWED_ORIGINS = '*'    # or 'foo.com', etc.
 # Function to build Tienda and ObjetoEnTienda objects
 def build_tienda_object(data):
     if data:
-        return Tienda(id=data[0], nombre=data[1], direccion=data[2])
+        return Tienda(id=data[0], nombre=data[1])
     return None
 
 def build_objeto_en_tienda_object(data):
