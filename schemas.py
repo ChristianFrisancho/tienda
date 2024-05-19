@@ -5,3 +5,8 @@ class Item(BaseModel):
     nombre_objeto: str
     precio: int
     stock: int
+
+class Tienda(BaseModel):
+    id: int
+    nombre: str
+    
