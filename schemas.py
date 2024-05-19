@@ -7,6 +7,5 @@ class Item(BaseModel):
     stock: int
 
 class Tienda(BaseModel):
-    id: int
     nombre: str
     
