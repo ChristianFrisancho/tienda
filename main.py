@@ -41,6 +41,10 @@ user_name = "admin"
 password_db = "CC-utec_2024-s3"
 database_name = "tienda"
 
+@app.get("/")
+def get_success():
+    return { "message": "success" }
+
 # Obtener todas las tiendas
 @app.get("/tiendas")
 def get_tiendas():
