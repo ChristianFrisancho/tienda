@@ -12,10 +12,12 @@ class Tienda:
         self.nombre = nombre
 
 class ObjetoEnTienda:
-    def __init__(self, id, nombre_tienda, nombre_objeto, precio, stock):
+    def __init__(self, id, nombre_tienda, nombre_objeto, id_tienda, id_objeto, precio, stock):
         self.id = id
         self.nombre_tienda = nombre_tienda
         self.nombre_objeto = nombre_objeto
+        self.id_tienda = id_tienda
+        self.id_objeto = id_objeto
         self.precio = precio
         self.stock = stock
         
@@ -29,7 +31,7 @@ def build_tienda_object(data):
 
 def build_objeto_en_tienda_object(data):
     if data:
-        return ObjetoEnTienda(id=data[0], nombre_tienda=data[1], nombre_objeto=data[2], precio=data[3], stock=data[4])
+        return ObjetoEnTienda(id=data[0], nombre_tienda=data[1], nombre_objeto=data[2], id_tienda=data[3], id_objeto=data[4], precio=data[5], stock=data[6])
     return None
 
 # Database connection parameters
@@ -92,9 +94,10 @@ def add_objeto_en_tienda(id: int, item: schemas.Item):
     nombre_objeto = item.nombre_objeto
     precio = item.precio
     stock = item.stock
+    id_objeto = item.id_objeto
     cursor = mydb.cursor()
     sql = "INSERT INTO objetos_en_tienda (nombre_tienda, nombre_objeto, precio, stock, id_tienda, id_objeto) VALUES (%s, %s, %s, %s, %s, %s)"
-    val = (nombre_tienda, nombre_objeto, precio, stock, id , item.id_objeto)
+    val = (nombre_tienda, nombre_objeto, precio, stock, id, id_objeto)
     cursor.execute(sql, val)
     mydb.commit()
     mydb.close()
@@ -110,8 +113,8 @@ def update_objeto_en_tienda(id_tienda: int, id_objeto: int, item: schemas.Item):
     precio = item.precio
     stock = item.stock
     cursor = mydb.cursor()
-    sql = "UPDATE objetos_en_tienda SET nombre_objeto=%s, precio=%s, stock=%s WHERE id=%s"
-    val = (nombre_objeto, precio, stock, id_objeto)
+    sql = "UPDATE objetos_en_tienda SET stock=%s WHERE id_tienda=%s AND id_objeto=%s"
+    val = (stock, id_tienda, id_objeto)
     cursor.execute(sql, val)
     mydb.commit()
     mydb.close()
